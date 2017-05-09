@@ -25,7 +25,8 @@ timeout = 20
 def getBS(url):
 	request = urllib.request.Request(url, None, headers)
 	try:
-		response = urllib.request.urlopen(request, None, timeout)
+		# response = urllib.request.urlopen(request, None, timeout)
+		content = urllib.request.urlopen(request, None, timeout).read().decode("utf-8")
 	except (URLError, HTTPError) as e:
 		print("Something Wrong Happened: ", e)
 		return
@@ -33,7 +34,6 @@ def getBS(url):
 		print("Timeout at the page: %s" % url)
 		return
 	else:
-		print("Successfully access the page: %s" % url)
-		content = response.read().decode("utf-8")
+		print("Successfully access the page: %s" % url)		
 		soup = BeautifulSoup(content)
 		return soup
