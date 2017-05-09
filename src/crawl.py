@@ -1,5 +1,6 @@
 import urllib.request
-import urllib.error
+from urllib.error import URLError, HTTPError
+from socket import timeout
 from bs4 import BeautifulSoup
 from config import headers
 
@@ -25,10 +26,14 @@ def getBS(url):
 	request = urllib.request.Request(url, None, headers)
 	try:
 		response = urllib.request.urlopen(request, None, timeout)
-	except (urllib.error.URLError, urllib.error.HTTPError) as e:
+	except (URLError, HTTPError) as e:
 		print("Something Wrong Happened: ", e)
 		return
+	except timeout:
+		print("Timeout at the page: %s" % url)
+		return
 	else:
+		print("Successfully access the page: %s" % url)
 		content = response.read().decode("utf-8")
 		soup = BeautifulSoup(content)
 		return soup
