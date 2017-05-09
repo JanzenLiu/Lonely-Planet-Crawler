@@ -91,7 +91,23 @@ Information to crawl for a country
 		TO BE EXPLORED
 		
 # Articles
-
+	inside the page [countryUrl]/travel-tips-and-articles
+	store at most 8 articles
+	# article
+		each article inside a "div" with class "card__mask"
+		all elements refered below are children of the "div" fore-mentioned
+		# article url
+			inside the href attribute of the "a" element
+			need to add "https://www.lonelyplanet.com" in front of the link
+		# article imaegUrl
+			inside the src attribute of the "img" element
+			processing needed: remove the the leading query path, leave only the link with the format like "http://www.lonelyplanet.com/travel-blog/tip-article/wordpress_uploads/2017/05/xian-chinaGettyImages-187351791-2b87a256574c.jpg"
+		# article title
+			inside the "h1" with class "card__content__title"
+			need to remove '\n'
+		# article in brief
+			inside the "div" with class "card__content__desc"
+			need to remove '\n'
 # Cities
 '''
 
