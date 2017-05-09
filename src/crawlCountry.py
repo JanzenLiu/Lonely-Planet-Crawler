@@ -34,16 +34,17 @@ Information to crawl for a country
 	# general introduction for features
 		a "h2" with class "copy-subtitle" with a following "p" with class "copy-body"
 
-# Survival Guides
+# Essential Information
 	inside the page [countryUrl]/essential-information
 	really a lot of thing to crawl...
 	# At a glance
 		# language
 			# phrase for "hello"
 				inside "div" with class "js-hello-phrase"
+				need to remove the '\n's at the beginning and at the end
 			# language name
 				inside "div" with class "hello__language"
-			
+				need to remove the '\n's at the beginning and at the end	
 		# electricity
 			# plugImgUrl
 				inside the src attribute of "img" with class "plug-image"
@@ -111,6 +112,7 @@ def crawlCountry(countryUrl):
 	name = name.replace('\n','').replace(' ','')
 	country["name"] = name
 
+
 	### Get the area ###
 	area = ""
 	areaDiv = bs.find("div", class_="masthead__breadcrumb")
@@ -119,6 +121,7 @@ def crawlCountry(countryUrl):
 	else:
 		print("Failed to access the area for the country %s", name)
 	country["area"] = area
+
 
 	### Get the image urls ###
 	imageUrls = []
@@ -136,6 +139,7 @@ def crawlCountry(countryUrl):
 		print("Failed to access images for the country %s" % name)
 	country["imageUrls"] = imageUrls
 
+
 	### get the map url ###
 	mapUrl = ""
 	mapDiv = bs.find("div", class_="map-static__container")
@@ -146,6 +150,7 @@ def crawlCountry(countryUrl):
 		print("Failed to access the map for the country %s" % name)
 	country["mapUrl"] = mapUrl
 
+
 	### get the introduction (including "Why I Love...", a brief introduction and additional introduction) ###
 	brief = ""
 	love = {}
@@ -154,6 +159,8 @@ def crawlCountry(countryUrl):
 	introBS = crawl.getBS(introUrl)
 	if(introBS):
 		introDiv = introBS.find("div", attrs={"itemprop":"articleBody"})
+
+		### get the "Why I Love..." introduction ###
 		loveHeader = introDiv.find("h2", text=re.compile("Why I Love"))
 		if(loveHeader):
 			# error handler here in the case that the following two elements are not author, body in sequence
@@ -171,6 +178,7 @@ def crawlCountry(countryUrl):
 			# code here...
 			print("Failed to extract \"Why I Love...\" introduction for the country %s" % name)
 
+		### get the brief introduction ###
 		briefElem = introDiv.p
 		if ('copy--feature' in briefElem["class"]):
 			brief = briefElem.text
@@ -179,6 +187,7 @@ def crawlCountry(countryUrl):
 			# code here...
 			print("Failed to extract brief introduction for the country %s" % name)
 
+		### get other general introduction ###
 		subtitle = ""
 		for introElem in briefElem.next_siblings:
 			# if the element is a "h2", store it as te current subtitle
@@ -204,8 +213,99 @@ def crawlCountry(countryUrl):
 	country["intros"] = intros
 
 
+	### get the essential information ###
+	greeting = ""
+	language = ""
+	plugImgUrl = ""
+	elecType = ""
+	visaIntro = ""
+	bestMonths = []
+	bestSeasons = []
+	essInfoUrl = countryUrl + "/essential-information"	
+	infoBS = crawl.getBS(essInfoUrl)
+	if(introBS):
+
+		### get the language information: language name and "hello" in the language ###
+		greetingDiv = infoBS.find("div", class_="js-hello-phrase")
+		if(greetingDiv):
+			greeting = greetingDiv.text
+			greeting = greeting.replace('\n','')
+		else:
+			print("Failed to access the \"hello\" in local language for the country %s" % name)
+		languageDiv = infoBS.find("div", class_="hello__language")
+		if(languageDiv):
+			language = languageDiv.text
+			language = language.replace('\n','')
+		else:
+			print("Failed to access the language for the country %s" % name)
+
+		### get the electricity information: plug image and electricity type ###
+		plugImg = infoBS.find("img", class_="plug-image")
+		if(plugImg):
+			plugImgUrl = plugImg["src"]
+			plugImgUrl = imageParamRemover(plugImgUrl)
+		else:
+			print("Failed to access the plug image for the country %s" % name)
+		elecDiv = infoBS.find("div", text=re.compile("Electricity"))
+		if(elecDiv):
+			elecTypeDiv = elecDiv.find_next_sibling()
+			if(elecTypeDiv):
+				elecType = elecTypeDiv.text
+				elecType = elecType.replace('\n','')
+			else:
+				print("Failed to access the electricity type for the country %s" % name)
+		else:
+			print("Failed to access the electricity label for the country %s" % name)
+
+		### get the best travel time: seasons and months ###
+		bestMonthDivs = infoBS.find_all("div", class_="flip-chart")
+		for bestMonthDiv in bestMonthDivs:
+			bestMonth = bestMonthDiv.text
+			bestMonth = bestMonth.replace('\n','')
+			bestMonths.append(bestMonth)
+		bestTimeDiv = infoBS.find("div", text=re.compile("Best time to go"))
+		if(bestTimeDiv):
+			bestSeasonDiv = bestTimeDiv.find_next_sibling()
+			if(bestSeasonDiv):
+				seasonStr = bestSeasonDiv.text
+				seasons = seasonStr.replace('\n\n','@').replace('\n','').split('@')
+				for season in seasons:
+					bestSeasons.append(season)
+			else:
+				print("Failed to access the best seasons for traveling for the country %s" % name)
+		else:
+			print("Failed to access the best time to go label for the country %s" % name)
+
+		### get the visa information ###
+		visaHeader = infoBS.find("h3", id="visas")
+		if(visaHeader):
+			visaDiv = visaHeader.find_next_sibling()
+			if(visaDiv):
+				if(not visaDiv.p.text.replace('\n','')):
+					visaDiv.p.extract()
+				visaP = visaDiv.p
+				visaIntro = visaP.text
+			else:
+				print("Failed to access the brief visa information for the country %s" % name)
+		else:
+			print("Failed to access the visa headerfor the country %s" % name)
+	else:
+		print("Failed to access the essential information page for the country %s" % name)
+	country["greeting"] = greeting
+	country["language"] = language
+	country["plugImgUrl"] = plugImgUrl
+	country["elecType"] = elecType
+	country["visaIntro"] = visaIntro
+	country["bestMonths"] = bestMonths
+	country["bestSeasons"] =  bestSeasons
 	return country
 
 def imageParamRemover(imageUrl):
 	newUrl = imageUrl.split('?')[0] # remove the size parameter
 	return newUrl
+
+def crawlEssInfo(countryUrl):
+	essInfoUrl = countryUrl + "/essential-information"
+	infoBS = crawl.getBS(essInfoUrl)
+
+	return 
