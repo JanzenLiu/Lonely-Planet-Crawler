@@ -35,7 +35,60 @@ Information to crawl for a country
 		a "h2" with class "copy-subtitle" with a following "p" with class "copy-body"
 
 # Survival Guides
-
+	inside the page [countryUrl]/essential-information
+	really a lot of thing to crawl...
+	# At a glance
+		# language
+			# phrase for "hello"
+				inside "div" with class "js-hello-phrase"
+			# language name
+				inside "div" with class "hello__language"
+			
+		# electricity
+			# plugImgUrl
+				inside the src attribute of "img" with class "plug-image"
+			# elecType
+				inside the "div" following a sibling "div" with text value "Electricity"
+				need to remove the '\n's at the beginning and the end
+			# more on electricity
+				TO BE EXPLORED
+		# Best time to go
+			# best months to go
+				inside "div" with class "flip-chart"
+				need to remove the '\n's at the beginning and the end
+			# best seasons to go 
+				inside the "div" following a sibling "div" with text "Best time to go"
+				need to remove the '\n' at the beginning and the end
+				when more than one best seasons, '\n\n' will be inserted between seasons 
+		# Current Weather
+			TO BE EXPLORED
+	# Visas
+		# brief information
+			inside "p" inside "div" following a sibling "h3" with id "visas"
+			inside the second "p", the first "p" is observed to be empty (according china and usa)
+		# LP's visa advice
+			TO BE EXPLORED
+		# More on entry and exit formalities
+			TO BE EXPLORED
+	# When to go and weather
+		TO BE EXPLORED
+	# Getting to China
+		TO BE EXPLORED
+	# Getting around China
+		TO BE EXPLORED
+	# Health and safety
+		TO BE EXPLORED
+	# Advice for travellers
+		TO BE EXPLORED
+	# COMMUNICATION
+		TO BE EXPLORED
+	# TOURIST INFORMATION
+		TO BE EXPLORED
+	# GOOD TO KNOW
+		TO BE EXPLORED
+	# BEFORE YOU GO
+		TO BE EXPLORED
+		
 # Articles
 
 # Cities
