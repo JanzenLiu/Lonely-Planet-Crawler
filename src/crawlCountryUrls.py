@@ -1,4 +1,5 @@
 import crawl
+from saveFile import saveJson
 
 ''' 
 To get url and name for each country under page: /places
@@ -15,10 +16,18 @@ def getCountryUrls():
 		return
 
 	# get "a" element for each page
-	countries = soup.find_all("a", class_="card--list")
+	countryAs = soup.find_all("a", class_="card--list")
 
-	# find all urls for single country, return a url list
-	urls = []
-	for country in countries:
-		urls.append(country["href"])
-	return urls
+	# find all urls for single country, return urls with the country name
+	countries = {}
+	for country in countryAs:
+		url = country["href"]
+		name = country.h3.text.replace('\n','').replace(' ','')
+		# print("%s: %s" % (name, url))
+		# urls.append(url)
+		countries[name] = url
+	return countries
+
+def saveCountryUrls():
+	countries = getCountryUrls()
+	saveJson("../url/countryUrls.json", countries)
