@@ -1,0 +1,32 @@
+{
+    "name": "USA",
+    "imageUrls": [
+        "https://lonelyplanetimages.imgix.net/a/g/hi/t/62c0dd43d9d82c4ce69319e7fbc85320-usa.jpg",
+        "https://lonelyplanetimages.imgix.net/a/g/hi/t/373321b4ae427b2d482bc246a4e04476-usa.jpg",
+        "https://lonelyplanetimages.imgix.net/a/g/hi/t/15674f6012930eac98c0aef9ac506eff-usa.jpg",
+        "https://lonelyplanetimages.imgix.net/a/g/hi/t/603092b4474a94fc0e296b61789fc912-usa.jpg",
+        "https://lonelyplanetimages.imgix.net/a/g/hi/t/3293e5f5fed818705bb39c5e694a813a-usa.jpg"
+    ],
+    "intros": {
+        "Food-Loving Nation": [
+            "On one evening in the US, thick barbecue ribs and smoked brisket come piping hot at a Texas roadhouse, while talented chefs blend organic produce with Asian accents at award-winning West Coast restaurants. Locals get their fix of bagels and lox at a century-old deli in Manhattan's Upper West Side, and several states away, plump pancakes and fried eggs disappear under the clatter of cutlery at a 1950s-style diner. Steaming plates of fresh lobster served off a Maine pier, oysters and champagne in a fashion-forward wine bar in California, Korean tacos out of a Portland food truck \u2013 these are just a few ways to dine \u00e0 la Americana."
+        ],
+        "On the Road Again": [
+            "This is a country of road trips and great open skies, where four million miles of highways lead past red-rock deserts, below towering mountain peaks, and across fertile wheat fields that roll off toward the horizon. The sun-bleached hillsides of the Great Plains, the lush rainforests of the Pacific Northwest and the scenic country lanes of New England are a few fine starting points for the great American road trip."
+        ],
+        "Cultural Behemoth": [
+            "The USA has made tremendous contributions to the arts. Georgia O'Keeffe's wild landscapes, Robert Rauschenberg's surreal collages, Alexander Calder's elegant mobiles and Jackson Pollock's drip paintings have entered the vernacular of 20th-century art. Chicago and New York have become veritable drawing boards for the great architects of the modern era. And from the soulful blues born in the Mississippi Delta to the bluegrass of Appalachia and Detroit's Motown sound \u2013 plus jazz, funk, hip-hop, country, and rock and roll \u2013 America has invented sounds integral to modern music."
+        ],
+        "Bright Lights, Big Cities": [
+            "America is the birthplace of LA, Las Vegas, Chicago, Miami, Boston and New York City \u2013 each a brimming metropolis whose name alone conjures a million different notions of culture, cuisine and entertainment. Look more closely, and the American quilt unfurls in all its surprising variety: the eclectic music scene of Austin, the easygoing charms of antebellum Savannah, the eco-consciousness of free-spirited Portland, the magnificent waterfront of San Francisco and the captivating French Quarter of jazz-loving New Orleans."
+        ]
+    },
+    "mapUrl": "https://lonelyplanetstatic.imgix.net/destinations-next/images/maps_static/maps_static-21609.jpeg",
+    "area": "North America",
+    "love": {
+        "author": "By Regis St Louis, Writer",
+        "title": "Why I Love USA",
+        "body": "When it comes to travel, America has always floored me with its staggering range of possibilities. Not many other countries have so much natural beauty \u2013 mountains, beaches, rainforest, deserts, canyons, glaciers \u2013 coupled with fascinating cities to explore, an unrivaled music scene and all the things that make travel so rewarding (friendly locals, great restaurants and farmers markets, and plenty of quirky surprises). I love walking and pedaling around cities, but there's nothing quite like hitting the open road for the unsung wonders and hidden corners of this inspiring country."
+    },
+    "brief": "The great American experience is about so many things: bluegrass and beaches, snow-covered peaks and redwood forests, restaurant-loving cities and big open skies."
+}

@@ -20,6 +20,9 @@ Information to crawl for a country
 	1. each image have four values: small, medium, large, strapline, with the destination url the same, need to keep only one url for each image
 	2. size of each version are different, need to remove size parameter at the end
 
+# Map
+	inside data-preload attribute of "div" with class "map-static__container"
+
 # Introduction
 	inside the page [countryUrl]/introduction
 	inside "div" with itemprop = "articleBody"
@@ -43,27 +46,54 @@ def crawlCountry(countryUrl):
 
 	bs = crawl.getBS(countryUrl)
 	if(not bs):
-		print("Failed to access the country page %s" % countryUrl)
+		print("Failed to access the country page %s, country crawling ends" % countryUrl)
 		return country
 
-	name = bs.find("h1", class_="masthead__title").text
+	### Get the name ###
+	nameHeader = bs.find("h1", class_="masthead__title")
+	if(not nameHeader):
+		print("Failed to access the name at the country page %s, country crawling ends" % countryUrl)
+		return country
+	name = nameHeader.text
 	name = name.replace('\n','').replace(' ','')
 	country["name"] = name
 
-	area = bs.find("div", class_="masthead__breadcrumb").a.text
+	### Get the area ###
+	area = ""
+	areaDiv = bs.find("div", class_="masthead__breadcrumb")
+	if(areaDiv):
+		area = areaDiv.a.text
+	else:
+		print("Failed to access the area for the country %s", name)
 	country["area"] = area
 
-	images = bs.find("div", class_="slideshow")["data-lp-initial-images"]
-	imageList = json.loads(images) # convert string to list of objects/dicts
+	### Get the image urls ###
 	imageUrls = []
-	for image in imageList:
-		# exception handler in case of the "small" key corresponds to an empty value
-		# code here...
-		imageUrl = image["small"] # get the url with size parameter for the small version
-		imageUrl = imageUrl.split('?')[0] # remove the size parameter
-		imageUrls.append(imageUrl)
+	imageDiv = bs.find("div", class_="slideshow")
+	if(imageDiv):
+		images = imageDiv["data-lp-initial-images"]
+		imageList = json.loads(images) # convert string to list of objects/dicts
+		for image in imageList:
+			# exception handler in case of the "small" key corresponds to an empty value
+			# code here...
+			imageUrl = image["small"] # get the url with size parameter for the small version
+			imageUrl = imageParamRemover(imageUrl) # remove the size parameter
+			imageUrls.append(imageUrl)
+	else:
+		print("Failed to access images for the country %s" % name)
 	country["imageUrls"] = imageUrls
 
+	### get the map url ###
+	mapUrl = ""
+	mapDiv = bs.find("div", class_="map-static__container")
+	if(mapDiv):
+		mapUrl = mapDiv["data-preload"]
+		mapUrl = imageParamRemover(mapUrl)
+	else:
+		print("Failed to access the map for the country %s" % name)
+	country["mapUrl"] = mapUrl
+
+	### get the introduction (including "Why I Love...", a brief introduction and additional introduction) ###
 	brief = ""
 	love = {}
 	intros = {}
@@ -77,8 +107,8 @@ def crawlCountry(countryUrl):
 			# code here...
 			authorP = loveHeader.find_next_sibling()
 			loveP = authorP.find_next_sibling()		
-			love["title"] = loveHeader.text,
-			love["author"] = authorP.text,
+			love["title"] = loveHeader.text
+			love["author"] = authorP.text
 			love["body"] =  loveP.text
 			loveHeader.extract()
 			authorP.extract()
@@ -120,4 +150,9 @@ def crawlCountry(countryUrl):
 	country["love"] = love
 	country["intros"] = intros
 
+
 	return country
+
+def imageParamRemover(imageUrl):
+	newUrl = imageUrl.split('?')[0] # remove the size parameter
+	return newUrl
