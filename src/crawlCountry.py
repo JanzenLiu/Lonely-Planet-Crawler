@@ -108,6 +108,7 @@ Information to crawl for a country
 		# article in brief
 			inside the "div" with class "card__content__desc"
 			need to remove '\n'
+
 # Cities
 '''
 
@@ -314,14 +315,99 @@ def crawlCountry(countryUrl):
 	country["visaIntro"] = visaIntro
 	country["bestMonths"] = bestMonths
 	country["bestSeasons"] =  bestSeasons
+
+	### get the articles: at most 8 articles, with url, imageUrl, title and desc ###
+	# articles = []
+	# articlesUrl = countryUrl + "/travel-tips-and-articles"
+	# articlesBS = crawl.getBS(articlesUrl)
+	# if(articlesBS):
+	# 	articleDivs = articlesBS.find_all("div", class_="card__mask", limit=8) # crawl at most 8 articles
+
+	# 	### get information for each single article ###
+	# 	for articleDiv in articleDivs:
+	# 		articleA = articleDiv.a
+	# 		if(not articleA):
+	# 			print("Failed to access the link to page of this article under the country %s" % name)
+	# 			continue
+	# 		article = {}
+	# 		imageUrl = ""
+	# 		title = ""
+	# 		desc = ""
+	# 		url = articleA["href"]
+	# 		url = crawl.baseUrl + url
+
+	# 		articleImg = articleDiv.img
+	# 		if(articleImg):
+	# 			rawUrl = articleImg["src"]
+	# 			pattern = 'http:\/\/www\.lonelyplanet\.com\/.*\.jpg'
+	# 			searchObj = re.search(pattern, rawUrl)
+	# 			imageUrl = searchObj.group()
+	# 		else:
+	# 			print("Failed to access the imageUrl of the article %s" % url)
+
+	# 		titleHeader = articleDiv.find("h1", class_="card__content__title")
+	# 		if(titleHeader):
+	# 			title = titleHeader.text
+	# 			title = title.replace('\n','')
+	# 		else:
+	# 			print("Failed to access the title of the article %s" % url)
+
+	# 		descDiv = articleDiv.find("div", class_="card__content__desc")
+	# 		if(descDiv):
+	# 			desc = descDiv.text
+	# 			desc = desc.replace('\n','')
+	# 		else:
+	# 			print("Failed to access the brief description of the article %s" % url)
+
+	# 		article["url"] = url
+	# 		article["title"] = title
+	# 		article["desc"] = desc
+	# 		article["imageUrl"] = imageUrl
+			
+	# 		articles.append(article)
+
+	### get the articles: url only and crawl all articles available ###
+	articles = []
+	articlesUrl = countryUrl + "/travel-tips-and-articles"
+	articlesBS = crawl.getBS(articlesUrl)
+	if(articlesBS):
+
+		# get the number of pages of articles
+		pageLinks = articlesBS.find_all("a", class_="js-page-link")
+		pageCount = int(pageLinks[-1].text)
+
+		### get urls from each single page ###
+		for pageNum in range(pageCount):
+			if(pageNum > 0):
+				articlesUrl = countryUrl + "/travel-tips-and-articles?page=" + str(pageNum + 1)
+				articlesBS = crawl.getBS(articlesUrl)
+			if(articlesBS):
+				articleDivs = articlesBS.find_all("div", class_="card__mask")
+
+				### get url for each single article ###
+				for articleDiv in articleDivs:
+					articleA = articleDiv.a
+					if(not articleA):
+						print("Failed to access the link to page of this article under the country %s" % name)
+						continue
+					articleUrl = articleA["href"]
+					articleUrl = crawl.baseUrl + articleUrl
+					articles.append(articleUrl)
+			else:
+				print("Failed to access to the #%d articles page of the country %s" % (pageNum, name))
+	else:
+		print("Failed to get the articles page for the country %s" % name)
+	country["articles"] = articles
+
 	return country
 
 def imageParamRemover(imageUrl):
 	newUrl = imageUrl.split('?')[0] # remove the size parameter
 	return newUrl
 
-def crawlEssInfo(countryUrl):
-	essInfoUrl = countryUrl + "/essential-information"
-	infoBS = crawl.getBS(essInfoUrl)
+def crawlArticles(countryUrl):
+	
+	name = "Atlantis"
+	articles = []
 
-	return 
+	return articles
