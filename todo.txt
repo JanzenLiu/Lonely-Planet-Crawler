@@ -1,2 +1,8 @@
 1. Add error handling log
 2. Use scrapy instead pure python script
+3. Optimize going through all articles/places pages in the country crawler: crawl page link directly instead the pageNum
+4. Add error handliing for file I/O: e.g. save and read json
+5. Fix brief introduction crawling in country crawler: some countries have brief introduction in more than one blocks
+6. Fix name crawling in country crawler: spaces in country name eliminated
+7. Fix language crawling in country crawler: some countries have more than one official languages
+8. Fix going through all articles/places pages in the country crawler: when there is only one page, disable the loop
