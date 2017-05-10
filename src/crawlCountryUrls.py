@@ -1,5 +1,5 @@
 import crawl
-from saveFile import saveJson
+from saveFile import saveJson, readJson
 
 ''' 
 To get url and name for each country under page: /places
@@ -22,7 +22,7 @@ def getCountryUrls():
 	countries = {}
 	for country in countryAs:
 		url = country["href"]
-		name = country.h3.text.replace('\n','').replace(' ','')
+		name = country.h3.text.replace('\n','').replace(' ','-')
 		# print("%s: %s" % (name, url))
 		# urls.append(url)
 		countries[name] = url
@@ -31,3 +31,16 @@ def getCountryUrls():
 def saveCountryUrls():
 	countries = getCountryUrls()
 	saveJson("../url/countryUrls.json", countries)
+
+def readCountryUrls(type = "list"):
+	if(type == "list"):
+		urls = []
+		countries = readJson("../url/countryUrls.json")
+		for item in countries.items():
+			urls.append(item[1])
+	elif(type == "dict"):
+		urls = readJson("../url/countryUrls.json")
+	else:
+		print("Parameter type invalid: \"list\" for list format and \"dict\" for dict format")
+		return
+	return urls
