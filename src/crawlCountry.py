@@ -92,7 +92,6 @@ Information to crawl for a country
 		
 # Articles
 	inside the page [countryUrl]/travel-tips-and-articles
-	store at most 8 articles
 	# article
 		each article inside a "div" with class "card__mask"
 		all elements refered below are children of the "div" fore-mentioned
@@ -109,10 +108,26 @@ Information to crawl for a country
 			inside the "div" with class "card__content__desc"
 			need to remove '\n'
 
-# Cities
+# Places
+	inside the page [countryUrl]/places
+	# place
+		each article inside a "div" with class "card__mask"
+		all elements refered below are children of the "div" fore-mentioned
+		# place url
+			inside the href attribute of the "a" element
+			need to add "https://www.lonelyplanet.com" in front of the link
+		# place name
+			inside the "h1" (with class "card__content__title", which is not necessary for crawling)
+			need to remove '\n'
+		# place imageUrl
+			inside the src attribute of the "img" element
+			processing needed: remove the the leading query path, leave only the link with the format like "http://www.lonelyplanet.com/blablabla.jpg"
+		# place brief descriptoin
+			inside the "div" with class "card__content__desc"
+			need to remove '\n' at the beginning and at the end, but not in between paragraph
 '''
 
-def crawlCountry(countryUrl):
+def crawlCountry(countryUrl, article = False):
 	country = {}
 
 	bs = crawl.getBS(countryUrl)
@@ -136,7 +151,7 @@ def crawlCountry(countryUrl):
 	if(areaDiv):
 		area = areaDiv.a.text
 	else:
-		print("Failed to access the area for the country %s", name)
+		print("Failed to access the area for the country %s" % name)
 	country["area"] = area
 
 
@@ -216,13 +231,13 @@ def crawlCountry(countryUrl):
 				if(not subtitle):
 					# error handler in the case that no corresponding subtitle found
 					# code here...
-					print("Error: Introduction body for the country %s with no subtitles encountered", name)
+					print("Error: Introduction body for the country %s with no subtitles encountered" % name)
 				else:
 					intros[subtitle].append(introElem.text)
 			else:
 				# error handler in the case that unrecognized element found
 				# code here...
-				print("Error: Introduction for the country %s with unrecognizable type encountered", name)
+				print("Error: Introduction for the country %s with unrecognizable type encountered" % name)
 	else:
 		print("Failed to access the introduction page for the country %s" % name)
 	country["brief"] = brief
@@ -316,57 +331,19 @@ def crawlCountry(countryUrl):
 	country["bestMonths"] = bestMonths
 	country["bestSeasons"] =  bestSeasons
 
-	### get the articles: at most 8 articles, with url, imageUrl, title and desc ###
-	# articles = []
-	# articlesUrl = countryUrl + "/travel-tips-and-articles"
-	# articlesBS = crawl.getBS(articlesUrl)
-	# if(articlesBS):
-	# 	articleDivs = articlesBS.find_all("div", class_="card__mask", limit=8) # crawl at most 8 articles
+	### get all articles ###
+	if(article):
+		articles = crawlAllArticles(countryUrl, name)
+		country["articles"] = articles
 
-	# 	### get information for each single article ###
-	# 	for articleDiv in articleDivs:
-	# 		articleA = articleDiv.a
-	# 		if(not articleA):
-	# 			print("Failed to access the link to page of this article under the country %s" % name)
-	# 			continue
-	# 		article = {}
-	# 		imageUrl = ""
-	# 		title = ""
-	# 		desc = ""
-	# 		url = articleA["href"]
-	# 		url = crawl.baseUrl + url
+	return country
 
-	# 		articleImg = articleDiv.img
-	# 		if(articleImg):
-	# 			rawUrl = articleImg["src"]
-	# 			pattern = 'http:\/\/www\.lonelyplanet\.com\/.*\.jpg'
-	# 			searchObj = re.search(pattern, rawUrl)
-	# 			imageUrl = searchObj.group()
-	# 		else:
-	# 			print("Failed to access the imageUrl of the article %s" % url)
+def imageParamRemover(imageUrl):
+	newUrl = imageUrl.split('?')[0] # remove the size parameter
+	return newUrl
 
-	# 		titleHeader = articleDiv.find("h1", class_="card__content__title")
-	# 		if(titleHeader):
-	# 			title = titleHeader.text
-	# 			title = title.replace('\n','')
-	# 		else:
-	# 			print("Failed to access the title of the article %s" % url)
-
-	# 		descDiv = articleDiv.find("div", class_="card__content__desc")
-	# 		if(descDiv):
-	# 			desc = descDiv.text
-	# 			desc = desc.replace('\n','')
-	# 		else:
-	# 			print("Failed to access the brief description of the article %s" % url)
-
-	# 		article["url"] = url
-	# 		article["title"] = title
-	# 		article["desc"] = desc
-	# 		article["imageUrl"] = imageUrl
-			
-	# 		articles.append(article)
-
-	### get the articles: url only and crawl all articles available ###
+### get all articles: url only and crawl all articles available ###
+def crawlAllArticles(countryUrl, countryName):	
 	articles = []
 	articlesUrl = countryUrl + "/travel-tips-and-articles"
 	articlesBS = crawl.getBS(articlesUrl)
@@ -374,7 +351,7 @@ def crawlCountry(countryUrl):
 
 		# get the number of pages of articles
 		pageLinks = articlesBS.find_all("a", class_="js-page-link")
-		pageCount = int(pageLinks[-1].text)
+		pageCount = len(pageLinks) + 1
 
 		### get urls from each single page ###
 		for pageNum in range(pageCount):
@@ -388,26 +365,109 @@ def crawlCountry(countryUrl):
 				for articleDiv in articleDivs:
 					articleA = articleDiv.a
 					if(not articleA):
-						print("Failed to access the link to page of this article under the country %s" % name)
+						print("Failed to access the link to page of this article under the country %s" % countryName)
 						continue
 					articleUrl = articleA["href"]
 					articleUrl = crawl.baseUrl + articleUrl
 					articles.append(articleUrl)
 			else:
-				print("Failed to access to the #%d articles page of the country %s" % (pageNum, name))
+				print("Failed to access to the #%d articles page of the country %s" % (pageNum, countryName))
 	else:
-		print("Failed to get the articles page for the country %s" % name)
-	country["articles"] = articles
-
-	return country
-
-def imageParamRemover(imageUrl):
-	newUrl = imageUrl.split('?')[0] # remove the size parameter
-	return newUrl
-
-def crawlArticles(countryUrl):
-	
-	name = "Atlantis"
-	articles = []
+		print("Failed to get the articles page for the country %s" % countryName)
 
 	return articles
+
+### get the articles with number limited, 8 at default, with url, imageUrl, title and desc ###
+def crawlArticles(countryUrl, countryName, num = 8):
+	articles = []
+	articlesUrl = countryUrl + "/travel-tips-and-articles"
+	articlesBS = crawl.getBS(articlesUrl)
+	if(articlesBS):
+		articleDivs = articlesBS.find_all("div", class_="card__mask", limit=num) # crawl with number of articles limited to parameter num
+
+		### get information for each single article ###
+		for articleDiv in articleDivs:
+			articleA = articleDiv.a
+			if(not articleA):
+				print("Failed to access the link to page of this article under the country %s" % countryName)
+				continue
+			article = {}
+			imageUrl = ""
+			title = ""
+			desc = ""
+			url = articleA["href"]
+			url = crawl.baseUrl + url
+
+			articleImg = articleDiv.img
+			if(articleImg):
+				rawUrl = articleImg["src"]
+				pattern = 'http:\/\/www\.lonelyplanet\.com\/.*\.jpg'
+				searchObj = re.search(pattern, rawUrl)
+				imageUrl = searchObj.group()
+			else:
+				print("Failed to access the imageUrl of the article %s" % url)
+
+			titleHeader = articleDiv.find("h1", class_="card__content__title")
+			if(titleHeader):
+				title = titleHeader.text
+				title = title.replace('\n','')
+			else:
+				print("Failed to access the title of the article %s" % url)
+
+			descDiv = articleDiv.find("div", class_="card__content__desc")
+			if(descDiv):
+				desc = descDiv.text
+				desc = desc.replace('\n','')
+			else:
+				print("Failed to access the brief description of the article %s" % url)
+
+			article["url"] = url
+			article["title"] = title
+			article["desc"] = desc
+			article["imageUrl"] = imageUrl
+			
+			articles.append(article)
+	else:
+		print("Failed to access the articles page of the country %s" % countryName)
+	return article
+
+def crawlAllPlaces(countryUrl, countryName):
+	places = {}
+	placesUrl = countryUrl + "/places"
+	placesBS = crawl.getBS(placesUrl)
+	if(placesBS):
+
+		# get the number of pages of places
+		pageLinks = placesBS.find_all("a", class_="js-page-link")
+		pageCount = len(pageLinks) + 1
+
+		### get places from each single page ###
+		for pageNum in range(pageCount):
+			if(pageNum > 0):
+				placesUrl = countryUrl + "/places?page=" + str(pageNum + 1)
+				placesBS = crawl.getBS(placesUrl)
+			if(placesBS):
+				placeDivs = placesBS.find_all("div", class_="card__mask")
+
+				### get name and url for each single place ###
+				for placeDiv in placeDivs:
+					placeUrl = ""
+					placeHeader = placeDiv.h1
+					if(not placeHeader):
+						print("Failed to access the name of this place of the country %s" % countryName)
+						continue
+					placeName = placeHeader.text
+					placeName = placeName.replace('\n','')
+					placeA = placeDiv.a
+					if(not placeA):
+						print("Failed to access the link to this city of the country %s" % countryName)
+						continue
+					placeUrl = placeA["href"]
+					placeUrl = crawl.baseUrl + placeUrl
+					places[placeName] = placeUrl
+			else:
+				print("Failed to access to the #%d places page of the country %s" % (pageNum, countryName))
+	else:
+		print("Failed to get the places page for the country %s" % countryName)
+
+	return places
