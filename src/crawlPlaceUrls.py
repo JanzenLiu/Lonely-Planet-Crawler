@@ -1,7 +1,7 @@
 import crawl
 from crawlCountryUrls import readCountryUrls
 from crawlCountry import crawlAllPlaces
-from saveFile import saveJson
+from saveFile import saveJson, readJson
 
 def savePlaceUrls():
 	urls = readCountryUrls(type = "dict")

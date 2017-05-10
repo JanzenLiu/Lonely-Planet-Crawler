@@ -336,6 +336,10 @@ def crawlCountry(countryUrl, article = False):
 		articles = crawlAllArticles(countryUrl, name)
 		country["articles"] = articles
 
+	### get all places ###
+	places = crawlAllPlaces(countryUrl, name)
+	country["places"] = places
+
 	return country
 
 def imageParamRemover(imageUrl):
