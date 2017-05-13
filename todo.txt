@@ -9,3 +9,4 @@
 9. Article crawling for country and for city are the same, merge them to a single module
 10. Image parameter remover are the same for country and for city, merge them to a single module
 11. Add a unified url queue module to store the links to crawl, instead of generate new link in each crawler individually
+****** TO Crawler all sight urls under a place ******

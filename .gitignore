@@ -1,6 +1,14 @@
 # log file
 /src/geckodriver.log
+*.log
 /src/__pycache__
+itchat.pkl
+
+# data file
 *.json
+
+# compile intermediate file
 *.pyc
+
+# others
 key0.pem
