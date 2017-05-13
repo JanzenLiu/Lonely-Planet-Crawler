@@ -4,17 +4,17 @@ from crawl import baseUrl
 import time
 import random
 
-pause = 1 #initial time interval between reloads
+pause = 3 #initial time interval between reloads
 
 dcap = dict(DesiredCapabilities.PHANTOMJS)
 dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:53.0) Gecko/20100101 Firefox/53.0")
-dcap["phantomjs.page.settings.loadImages"] = False
+# dcap["phantomjs.page.settings.loadImages"] = False
 # service_args = ["--proxy=127.0.0.1:9999", "--proxy-type=socks5"]
 driver = webdriver.PhantomJS(desired_capabilities=dcap)
 
 url = baseUrl + "/china/hong-kong/attractions/a/poi-sig/355975"
 driver.get(url)
-driver.save_screenshot('screen.png')
+driver.save_screenshot('screen_shot.png')
 
 lastHeight = driver.execute_script("return document.body.scrollHeight")
 while True:
